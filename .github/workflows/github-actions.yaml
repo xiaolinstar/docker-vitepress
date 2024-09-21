@@ -30,8 +30,6 @@ jobs:
         run: pnpm install
       - name: Build
         run: pnpm run docs:build
-      - name: Copy Static
-        run: cp -r docs/static docs/.vitepress/dist/static
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4

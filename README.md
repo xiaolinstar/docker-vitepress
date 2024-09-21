@@ -260,6 +260,7 @@ node_modules
    ![GitHub Tokens Scopes](assets/github-token-scopes.png)
 
 ### GitHub Actions-Workflow配置文件
+
 更新本项目中的`github-actions.yaml`中个性化参数
 
 - `token`: `${{secrets.VITE_TOKEN}}`
@@ -279,22 +280,22 @@ name: Deploy 🚀
 
 push到GitHub仓库后，会自动触发GitHub Actions；也支持点击按钮手动触发。
 
-
-
 ### 构建并部署
+
 > 本过程在提交GitHub仓库后Settings中设置
 
 在该仓库中
 
-
-
-
 ## References
 
 [1]. VitePress由Vite和Vue驱动的静态站点生成器，https://vitepress.dev/zh/
+
 [2]. Git started，开始你的旅程，https://docs.github.com/zh/get-started/start-your-journey/about-github-and-git
+
 [3]. GitHub Actions，https://docs.github.com/zh/actions/writing-workflows/quickstart
+
 [4]. GitHub Pages，https://docs.github.com/zh/pages
+
 [5]. Gitee，https://gitee.com
 
 ## 联系作者
