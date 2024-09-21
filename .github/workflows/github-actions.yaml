@@ -1,0 +1,43 @@
+name: VitePress-hope Github Deploy
+on:
+  push:
+    branches:
+      - main
+  # 手动触发
+  workflow_dispatch:
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm run docs:build
+      - name: Copy Static
+        run: cp -r docs/static docs/.vitepress/dist/static
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{secrets.DOCS_SECRET}}
+          folder: docs/.vitepress/dist
+          git-config-name: xiaolinstar
+          git-config-email: xing.xiaolin@foxmail.com
+
