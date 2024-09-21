@@ -1,7 +1,11 @@
 import { defineConfig } from 'vitepress'
 
+// @ts-ignore (*) 网站基础路径，区分GitHub部署和常规部署
+const basePath = process.env.GITHUB_ACTIONS === 'true' ? '/docker-vitepress/' : '/'
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  base: basePath, // (*) 设置域名前缀
   title: "My Awesome Project",
   description: "A VitePress Site",
   themeConfig: {

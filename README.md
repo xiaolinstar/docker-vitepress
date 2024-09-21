@@ -12,7 +12,7 @@
 - [安装](#安装)
 - [容器化部署](#容器化部署)
 - [项目托管](#项目托管)
-- [发布网站]()
+- [网站发布](#网站发布)
 - [References](#references)
 - [联系作者](#联系作者)
 
@@ -239,12 +239,13 @@ node_modules
 ## 网站发布*
 
 > 无需具备公网的云服务器，GitHub以GitHub Actions和GitHub Pages的方式支持网站托管发布
+> 若想在个人服务器上发布项目，使用Jenkins实现CI/CD，自动化发布，详情关注作者其他仓库项目
 
-在GitHub中配置workflow脚本，就会自动运行
+在GitHub中配置workflow脚本，就会自动运行。
 
 1. 创建GitHub-Token，支持用脚本登入GitHub
 2. 配置workflow配置文件`github-actions.yaml`，目录`.github/workflows/github-actions.yaml`
-3. GitHub Pages中构建并部署
+3. 在GitHub部署域名中添加项目名`docker-vitepress`前缀
 
 ### 创建GitHub-Token
 
@@ -287,11 +288,53 @@ name: Deploy 🚀
 
 push到GitHub仓库后，会自动触发GitHub Actions；也支持点击按钮手动触发。
 
-### 构建并部署
+### 添加域名前缀
 
-在该GitHub仓库的Settings中触发配置和部署。
-1. Settings
-2. Pages
+GitHub Actions部署和普通云服务器部署域名区别：
+- 云服务域名：`https://vitepress-qucikstart`
+- GitHub域名：`https://xiaolinstar.github.io/docker-vitepress/`
+GitHub部署方式必云服务器部署多了仓库名前缀，需要在项目部署时做区分和处理，以兼容这两类部署方式。
+
+VitePress项目的主要配置文件包括两个：
+- docs/index.md
+- docs/.vitepress/config.mts
+
+只需在`config.mts`中添加2行代码即可区分项目部署方式。 修改后的`config.mts`内容如下（添加的代码以用注释标注）
+```ts
+import { defineConfig } from 'vitepress'
+
+// @ts-ignore (*) 网站基础路径，区分GitHub部署和常规部署
+const basePath = process.env.GITHUB_ACTIONS === 'true' ? '/docker-vitepress/' : '/'
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig({
+   base: basePath, // (*) 设置域名前缀
+   title: "My Awesome Project",
+   description: "A VitePress Site",
+   themeConfig: {
+      // https://vitepress.dev/reference/default-theme-config
+      nav: [
+         { text: 'Home', link: '/' },
+         { text: 'Examples', link: '/markdown-examples' }
+      ],
+
+      sidebar: [
+         {
+            text: 'Examples',
+            items: [
+               { text: 'Markdown Examples', link: '/markdown-examples' },
+               { text: 'Runtime API Examples', link: '/api-examples' }
+            ]
+         }
+      ],
+
+      socialLinks: [
+         { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      ]
+   }
+})
+
+```
 
 
 ## References
