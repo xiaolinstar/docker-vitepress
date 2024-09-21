@@ -255,11 +255,18 @@ node_modules
 3. Developer settings
 4. GitHub Apps -> Personal access tokens -> Tokens(classic)
 5. Generate new token -> Generate new token(classic)
-   设置TOKEN名，Note: `VITE_TOKEN`
+   设置TOKEN名，Note: `MY_GITHUB_TOKEN`(自定义名称，建议全大写)
    设置仓库权限：
    ![GitHub Tokens Scopes](assets/github-token-scopes.png)
+6. 生成一串TOKEN，请妥善保管（关闭后不可查看），将在下一小节使用
 
 ### GitHub Actions-Workflow配置文件
+
+在该项目的GitHub仓库Settings中配置仓库密钥
+1. Settings
+2. Security -> Secrets and variables -> Actions
+3. 创建新的仓库密钥： New repository secret
+4. 密钥命名为`VITE_TOKEN`，密钥为上一小节中获取的一串TOKEN
 
 更新本项目中的`github-actions.yaml`中个性化参数
 
@@ -282,9 +289,10 @@ push到GitHub仓库后，会自动触发GitHub Actions；也支持点击按钮�
 
 ### 构建并部署
 
-> 本过程在提交GitHub仓库后Settings中设置
+在该GitHub仓库的Settings中触发配置和部署。
+1. Settings
+2. Pages
 
-在该仓库中
 
 ## References
 

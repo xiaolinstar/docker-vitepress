@@ -34,7 +34,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          token: ${{secrets.DOCS_SECRET}}
+          token: ${{secrets.VITE_TOKEN}}
           folder: docs/.vitepress/dist
           git-config-name: xiaolinstar
           git-config-email: xing.xiaolin@foxmail.com
