@@ -29,7 +29,7 @@
 - Node.js 18及以上版本
 - Docker客户端
 - 命令行终端（Windows Powershell、MacOS终端）
-- 开发集成环境（IDE），VSCode、Webstorm
+- 开发集成环境（IDE）: VSCode、Webstorm
 
 （推荐VscodeProjects或WebstormProjects）创建空项目文件夹`docker-vitepress`
 
@@ -129,7 +129,7 @@ Command+C
 Ctrl+C
 ```
 
-容器打包，将在docs/.vitepress下生成dist包，该包用于在生产环境部署
+容器打包，将在`docs/.vitepress`下生成dist包，该包用于在生产环境部署
 
 ```shell
 pnpm run docs:build
@@ -182,10 +182,10 @@ EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
 ```
 
-容器构建，并将容器命名为`vitepress/hello:0.0.1`
+容器构建，并将容器命名为`my-vitepress/hello:0.0.1`
 
 ```shell
-docker build -t vitepress/hello:0.0.1 .
+docker build -t my-vitepress/hello:0.0.1 .
 ```
 
 完成一个VitePress Docker容器的构建，查看镜像
@@ -194,12 +194,45 @@ docker build -t vitepress/hello:0.0.1 .
 docker ps | grep hello:0.0.1
 ```
 
-创建并运行容器
+创建并运行容器（以下两种方式任选其一）
+
+---
+
+docker直接运行
 
 ```shell
 # 将vitepress/hello:0.0.1作为镜像启动容器，以后台方式运行，映射本地端口80，容器命名为my-vitepress
-docker run -d --name my-vitepress -p 80:8080 vitepress/hello:0.0.1
+docker run -d --name vitepress-test -p 80:8080 my-vitepress/hello:0.0.1
 ```
+
+停止容器
+
+```shell
+docker stop vitepress-test
+```
+
+删除容器
+
+```shell
+docker rm vitepress-test
+```
+
+---
+
+docker-compose构建并运行，需创建`docker-compose.yaml`配置文件(可选)
+
+```shell
+# docker compose up -d 
+docker-compose up -d
+```
+
+停止容器并卸载
+```shell
+# docker compose down
+docker-compose down
+```
+
+---
 
 在浏览器中打开 http://localhost 即可查看部署效果。
 
@@ -256,9 +289,9 @@ node_modules
 3. Developer settings
 4. GitHub Apps -> Personal access tokens -> Tokens(classic)
 5. Generate new token -> Generate new token(classic)
-   设置TOKEN名，Note: `MY_GITHUB_TOKEN`(自定义名称，建议全大写)
-   设置仓库权限：
-   ![GitHub Tokens Scopes](assets/github-token-scopes.png)
+   1. 设置TOKEN名，Note: `MY_GITHUB_TOKEN`(自定义名称，建议全大写)
+   2. 设置仓库权限：
+![GitHub Tokens Scopes](assets/github-token-scopes.png)
 6. 生成一串TOKEN，请妥善保管（关闭后不可查看），将在下一小节使用
 
 ### GitHub Actions-Workflow配置文件
@@ -286,7 +319,9 @@ name: Deploy 🚀
   git-config-email: xing.xiaolin@foxmail.com
 ```
 
-push到GitHub仓库后，会自动触发GitHub Actions；也支持点击按钮手动触发。
+`push`到GitHub仓库后，会自动触发GitHub Actions；
+
+`workflow_dispatch`也支持点击按钮手动触发。
 
 ### 添加域名前缀
 

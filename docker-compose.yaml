@@ -1,0 +1,15 @@
+networks:
+  vitepress-network:
+    external: false
+
+services:
+  docker-vitepress:
+    image: my-vitepress/hello:0.0.1
+    container_name: vitepress-test
+    ports:
+      - '80:8080'
+    networks:
+      - vitepress-network
+    # 设置上海时区
+    environment:
+      TZ: Asia/Shanghai
