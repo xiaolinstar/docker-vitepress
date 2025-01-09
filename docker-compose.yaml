@@ -4,7 +4,7 @@ networks:
 
 services:
   docker-vitepress:
-    image: my-vitepress/hello:0.0.1
+    image: my-vitepress/vitepress-docs:0.0.1
     container_name: vitepress-test
     ports:
       - '80:8080'
