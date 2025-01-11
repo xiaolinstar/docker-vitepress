@@ -3,9 +3,9 @@
 layout: home
 
 hero:
-  name: "My Awesome Project"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  name: "我的精彩项目"
+  text: "一个 VitePress 网站"
+  tagline: 微软是一家伟大的公司，是 GitHub 的拥有者
   actions:
     - theme: brand
       text: Markdown Examples
