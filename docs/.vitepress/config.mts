@@ -6,8 +6,8 @@ const basePath = process.env.GITHUB_ACTIONS === 'true' ? '/docker-vitepress/' : 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   base: basePath, // (*) 设置域名前缀
-  title: "My Awesome Project",
-  description: "A VitePress Site",
+  title: "我的精彩项目",
+  description: "一个 VitePress 站点",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

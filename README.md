@@ -7,15 +7,6 @@
 
 > 本文介绍 VitePress 搭建个人网站，并使用 Docker 容器化部署。
 
-## 目录
-
-- [项目概述](#项目概述)
-- [前置准备](#前置准备)
-- [项目初始化](#项目初始化)
-- [功能开发与测试](#功能开发与测试)
-- [容器化](#容器化)
-- [参考](#参考)
-- [联系作者](#联系作者)
 
 ## 项目概述
 
@@ -332,27 +323,72 @@ node_modules
 
 在GitHub中配置workflow脚本，就会自动运行。
 
-1. 创建GitHub-Token，支持用脚本登入GitHub
+1. 创建GitHub-Token，支持用脚本访问GitHub
 2. 配置workflow配置文件`github-actions.yaml`，目录`.github/workflows/github-actions.yaml`
 3. 在GitHub部署域名中添加项目名`docker-vitepress`前缀
 
 #### 创建GitHub-Token
 
+传送门：[创建 GitHub Token](https://github.com/settings/tokens/new?scopes=repo,read:user,user:email,write:repo_hook)
+
 操作步骤：
 
-1. 登录GitHub账户
-2. Settings
-3. Developer settings
-4. GitHub Apps -> Personal access tokens -> Tokens(classic)
-5. Generate new token -> Generate new token(classic)
-   1. 设置TOKEN名，Note: `MY_GITHUB_TOKEN`(自定义名称，建议全大写)
-   2. 设置仓库权限：
-      ![GitHub Tokens Scopes](assets/github-token-scopes.png)
-6. 生成一串TOKEN，请妥善保管（关闭后不可查看），将在下一小节使用
+1. Settings
+2. Security -> Secrets and variables -> Actions
+3. 创建新的仓库密钥： New repository secret
+4. 密钥命名为 `VITE_TOKEN`，密钥为上一小节中获取的一串 TOKEN
+
+> 定义 workflow 配置文件，询问 ChatGPT、Kimi、豆包，或者 IDE 插件：腾讯云 AI 代码助手、Mars Code
+
+基于 GitHub-Workflows 模板，定义配置文件 `.github/workflows/github-actions.yaml`。
+
+```yaml
+name: VitePress-hope Github Deploy
+on:
+  # 1. 自动触发：当在 main 分支上执行 push 动作时
+  push:
+    branches:
+      - main
+  # 2. 手动触发
+  workflow_dispatch:
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm run docs:build
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{secrets.VITE_TOKEN}}
+          folder: docs/.vitepress/dist
+          git-config-name: xiaolinstar
+          git-config-email: xing.xiaolin@foxmail.com
+```
 
 #### GitHub Actions Workflow 配置文件
 
-在该项目的GitHub仓库Settings中配置仓库密钥
+在该项目的 GitHub 仓库 Settings 中配置仓库密钥
 
 1. Settings
 2. Security -> Secrets and variables -> Actions
@@ -382,11 +418,13 @@ name: Deploy 🚀
 
 #### 添加域名前缀
 
-GitHub Actions部署和普通云服务器部署域名区别：
+GitHub Pages 发布和传统云服务器发布在域名上的区别：
 
-- 云服务域名：`https://vitepress-qucikstart`
-- GitHub域名：`https://xiaolinstar.github.io/docker-vitepress/`
-  GitHub部署方式必云服务器部署多了仓库名前缀，需要在项目部署时做区分和处理，以兼容这两类部署方式。
+- 云服务器个性域名：https://specific-domain.com/
+- GitHub域名：https://xiaolinstar.github.io/docker-vitepress/
+
+
+GitHub Pages 发布方式比云服务器发布多了仓库名前缀，需要在项目部署时做区分和处理，以兼容这两类发布方式。
 
 VitePress项目的主要配置文件包括两个：
 

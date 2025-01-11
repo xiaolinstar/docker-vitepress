@@ -1,9 +1,10 @@
 name: VitePress-hope Github Deploy
 on:
+  # 1. 自动触发：当在 main 分支上执行 push 动作时
   push:
     branches:
       - main
-  # 手动触发
+  # 2. 手动触发
   workflow_dispatch:
 
 
