@@ -161,6 +161,17 @@ vitepress build docs
 
 > 创建并配置 Dockerfile，它定义了镜像打包过程
 
+只需将源代码复制到镜像中，在镜像中构建项目。项目根目录下创建 `.dockerignore` 文件：
+
+```
+docs/.vitepress/cache
+
+/node_modules/
+/docs/.vitepress/dist/
+.idea
+.gitignore
+```
+
 项目根目录下新建 `Dockerfile`
 
 ```shell
@@ -431,7 +442,7 @@ VitePress项目的主要配置文件包括两个：
 - docs/index.md
 - docs/.vitepress/config.mts
 
-只需在`config.mts`中添加2行代码即可区分项目部署方式。 修改后的`config.mts`内容如下（添加的代码以用注释标注）
+只需在`config.mts`中添加2行代码即可区分项目部署方式。 修改后的`config.mts`内容如下（添加的代码已用注释标注）
 
 ```ts
 import { defineConfig } from 'vitepress'
