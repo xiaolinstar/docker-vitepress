@@ -3,13 +3,127 @@ networks:
     external: false
 
 services:
-  docker-vitepress:
-    image: my-vitepress/vitepress-docs:0.0.1
-    container_name: vitepress-test
+  vitepress-nginx:
+    image: nginx:alpine3.20-perl
+    container_name: vitepress-nginx
     ports:
-      - '80:8080'
+      - '80:80'
+    networks:
+      - vitepress-network
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+
+  vitepress-docs:
+    image: my-vitepress/vitepress-docs:0.0.1
+    build: ./
+    container_name: vitepress-docs
+    volumes:
+      - ./volumes/website/logs:/var/log/nginx
     networks:
       - vitepress-network
     # 设置上海时区
     environment:
       TZ: Asia/Shanghai
+
+  # Grafana
+  # 默认端口3000
+  grafana-vitepress:
+    image: grafana/grafana:11.3.2-ubuntu
+    container_name: grafana-vitepress
+    networks:
+      - vitepress-network
+    ports:
+      - "9000:3000"
+    volumes:
+      - ./volumes/grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+      - ./volumes/grafana/provisioning/etc/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./volumes/grafana/provisioning/etc/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./volumes/grafana/provisioning/var/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+      # 中国时区、匿名登陆
+      TZ: Asia/Shanghai
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_USERS_ALLOW_SIGN_UP: false
+
+  # Prometheus
+  prometheus-vitepress:
+    image: prom/prometheus:v2.53.3
+    container_name: prometheus-vitepress
+    volumes:
+      # 设置目录挂载
+      - ./volumes/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    environment:
+      TZ: Asia/Shanghai
+    networks:
+      - vitepress-network
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml" # prometheus配置文件
+      - "--storage.tsdb.path=/prometheus" # prometheus数据存储路径
+
+  # 启动node-exporter
+  # 该模式仅支持在 Linux 中运行
+  # 容器内端口9100
+  node-exporter-vitepress:
+    image: prom/node-exporter:v1.8.2
+    container_name: node-exporter-vitepress
+    environment:
+      TZ: Asia/Shanghai
+
+    networks:
+      - vitepress-network
+#
+#    # host宿主机模式
+#    network_mode: host
+#    # 容器与宿主机共享进程号
+#    pid: host
+#    # https://github.com/prometheus/node_exporter
+#    volumes:
+#      - '/:/host:ro,rslave'
+#    command:
+#      - '--path.rootfs=/host'
+
+  # nginx-prometheus-exporter
+  nginx-exporter-vitepress:
+    image: nginx/nginx-prometheus-exporter:1.4
+    container_name: nginx-exporter-vitepress
+    # 默认端口：9113
+    environment:
+      TZ: Asia/Shanghai
+    networks:
+      - vitepress-network
+    # 需要与抓取的 Nginx 服务在同一网络，且信息一致
+    command: "--nginx.scrape-uri=http://vitepress-docs:8081/stub_status" # 配置 Prometheus 抓取 Nginx 状态的 URI
+
+  promtail-vitepress:
+    image: grafana/promtail:3.4
+    container_name: promtail-vitepress
+    volumes:
+      # 设置目录挂载
+      - ./volumes/promtail/promtail.yaml:/etc/promtail/promtail.yaml:ro
+      - ./volumes/website/logs:/var/log
+    environment:
+      TZ: Asia/Shanghai
+    networks:
+      - vitepress-network
+    command:
+      - "--config.file=/etc/promtail/promtail.yaml" # promtail配置文件
+    depends_on:
+      - loki-vitepress
+
+  # Loki
+  # 默认端口3100
+  loki-vitepress:
+    image: grafana/loki:3.4
+    container_name: loki-vitepress
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./volumes/loki/loki-local-config.yaml:/etc/loki/local-config.yaml:ro
+    environment:
+      TZ: Asia/Shanghai
+    networks:
+      - vitepress-network
+    command:
+      - "--config.file=/etc/loki/local-config.yaml"

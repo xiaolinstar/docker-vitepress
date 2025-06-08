@@ -1,0 +1,23 @@
+global:
+  scrape_interval:     15s # 默认情况下，每 15s 采集一次目标数据
+  evaluation_interval: 15s # 默认情况下，每 15s 对规则进行评估
+
+# 仅包含一个采集端点的采集配置：这里是 Prometheus 本身
+scrape_configs:
+  # 作业名称作为标签 `job=<job_name>` 添加到从此配置中采集的时间序列上
+  - job_name: 'prometheus'
+    # 覆盖全局默认的参数，并将采样时间间隔设置为 5s
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["prometheus-vitepress:9090"]
+
+  - job_name: "node-exporter"
+    scrape_interval: 5s
+    static_configs:
+    #  - targets: ["host.docker.internal:9100"] # Docker Desktop
+#      - targets: ["172.17.0.1:9100"] # Docker in Linux
+      - targets: ["node-exporter-vitepress:9100"] # Docker-Bridge
+  - job_name: "nginx-exporter"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["nginx-exporter-vitepress:9113"]

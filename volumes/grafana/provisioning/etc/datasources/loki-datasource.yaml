@@ -1,0 +1,10 @@
+apiVersion: 1
+datasources:
+  - name: loki
+    type: loki
+    access: proxy
+    origId: 1
+    url: http://loki-vitepress:3100
+    basicAuth: false
+    version: 1
+    editable: false
